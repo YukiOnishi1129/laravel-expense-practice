@@ -13,7 +13,7 @@ class ExpenseRejectedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Expense $expense)
+    public function __construct(public Expense $expense, public string $comment)
     {
     }
 

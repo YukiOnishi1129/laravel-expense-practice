@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RejectExpenseRequest;
 use App\Models\Expense;
 use App\Services\ExpenseApprovalService;
 use Illuminate\Http\RedirectResponse;
@@ -32,9 +33,9 @@ class ExpenseApprovalController extends Controller
         return redirect()->route('expenses.index')->with('status', '承認しました');
     }
 
-    public function reject(Request $request, Expense $expense): RedirectResponse
+    public function reject(RejectExpenseRequest $request, Expense $expense): RedirectResponse
     {
-        $this->service->reject($expense, $request->user());
+        $this->service->reject($expense, $request->user(), $request->validated('comment'));
 
         return redirect()->route('expenses.index')->with('status', '差し戻しました');
     }

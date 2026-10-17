@@ -2,6 +2,9 @@
 
 申請が差し戻されました。
 
+差し戻しの理由：
+{{ $comment }}
+
 内容：{{ $expense->description }}
 金額：{{ number_format($expense->amount) }}円
 使った日：{{ $expense->used_on->format('Y/m/d') }}

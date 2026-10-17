@@ -20,15 +20,16 @@ class ExpenseApprovalService
         ]);
     }
 
-    public function reject(Expense $expense, User $approver): void
+    public function reject(Expense $expense, User $approver, string $comment): void
     {
         $expense->update(['status' => Expense::STATUS_REJECTED]);
 
         $expense->histories()->create([
             'user_id' => $approver->id,
             'action' => ExpenseApprovalHistory::ACTION_REJECTED,
+            'comment' => $comment,
         ]);
 
-        Mail::to($expense->user)->send(new ExpenseRejectedMail($expense));
+        Mail::to($expense->user)->send(new ExpenseRejectedMail($expense, $comment));
     }
 }
