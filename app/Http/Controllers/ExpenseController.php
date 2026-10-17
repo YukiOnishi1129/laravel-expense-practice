@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExpenseRequest;
 use App\Models\Expense;
+use App\Models\ExpenseApprovalHistory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -60,7 +61,15 @@ class ExpenseController extends Controller
 
         $expense->load(['user', 'approver']);
 
-        return view('expenses.show', compact('expense'));
+        // 差し戻されている時だけ、最新の差し戻しの理由を出す
+        $latestRejection = $expense->isRejected()
+            ? $expense->histories()
+                ->where('action', ExpenseApprovalHistory::ACTION_REJECTED)
+                ->latest('id')
+                ->first()
+            : null;
+
+        return view('expenses.show', compact('expense', 'latestRejection'));
     }
 
     public function edit(Expense $expense): View

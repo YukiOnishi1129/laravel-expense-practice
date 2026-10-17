@@ -19,6 +19,7 @@ class ExpenseApprovalHistory extends Model
         'expense_id',
         'user_id',
         'action',
+        'comment',
     ];
 
     public function expense(): BelongsTo
