@@ -120,6 +120,26 @@ class RejectExpenseTest extends TestCase
         $response->assertDontSee('1回目の理由');
     }
 
+    public function test_直して出し直した後の詳細には差し戻しの理由が出ない(): void
+    {
+        Mail::fake();
+        $expense = Expense::factory()->create();
+
+        $this->actingAs($expense->approver)
+            ->post(route('approvals.reject', $expense), ['comment' => '金額が違います']);
+        $this->actingAs($expense->user)->put(route('expenses.update', $expense), [
+            'amount' => 1500,
+            'used_on' => now()->toDateString(),
+            'description' => '交通費',
+        ]);
+
+        $response = $this->actingAs($expense->user)->get(route('expenses.show', $expense));
+
+        $this->assertSame(Expense::STATUS_PENDING, $expense->fresh()->status);
+        $response->assertDontSee('差し戻しの理由');
+        $response->assertDontSee('金額が違います');
+    }
+
     public function test_差し戻した後の申請一覧の最終更新日は差し戻した日時になる(): void
     {
         Mail::fake();
