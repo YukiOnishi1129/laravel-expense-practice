@@ -86,6 +86,10 @@ docker compose exec app tail -n 40 storage/logs/laravel.log
 docker compose exec app php artisan test
 ```
 
-- 単体テスト：`tests/Unit`
-- 結合テスト：`tests/Feature`（リクエストを送って、DB やメールまで通す）
-- テストは SQLite のメモリ上の DB で動きます（MySQL は使いません）
+| 種類 | 場所 | 中身 |
+|---|---|---|
+| 単体テスト（ユニットテスト） | `tests/Unit` | DB につながずに動かす。1つの部品（権限のルールなど）だけを確かめる |
+| 結合テスト（インテグレーションテスト） | `tests/Feature` | DB につないで動かす。リクエストを送って、コントローラから DB まで通して確かめる |
+
+- 結合テストの DB は、テスト用の SQLite（メモリ上の DB）です。MySQL は使いません（`phpunit.xml`）
+- メールはテストでは本当には送れないので、`Mail::fake()` のモックで送ったことにして、誰にどのメールを送ったかを確かめます
