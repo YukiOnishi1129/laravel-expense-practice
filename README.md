@@ -56,7 +56,21 @@ docker compose exec app php artisan migrate:fresh --seed
 | 直して出し直す | /expenses/{id}/edit | 差し戻された申請を直して出し直す |
 | 上長の承認画面 | /approvals/{id} | 「承認する」「差し戻す」のボタン |
 
-差し戻すと、申請者に「申請が差し戻されました」というメールが送られます。メールは実際には送らず、`storage/logs/laravel.log` に出ます。
+差し戻すと、申請者に「申請が差し戻されました」というメールが送られます。
+
+## メールの確かめ方
+
+このアプリは、メールを実際には送りません。送ったことにして、メールの中身をログのファイル（`storage/logs/laravel.log`）に書き出します（`.env` の `MAIL_MAILER=log`）。外のアドレスに届くことはありません。
+
+差し戻した後に、ログの最後を見ると、送られたはずのメールの宛先・件名・本文が出ています。
+
+```bash
+docker compose exec app tail -n 40 storage/logs/laravel.log
+```
+
+件名と宛先の名前は、`=?utf-8?Q?...?=` のような形に変換されて出ます（メールの決まりで日本語をこう書く）。本文はそのまま日本語で読めます。
+
+テストでは、メールは `Mail::fake()` で送ったことにして、「誰に・どのメールが送られたか」を確かめています（`tests/Feature/RejectExpenseTest.php`）。
 
 ## テーブル
 
